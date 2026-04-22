@@ -1,0 +1,53 @@
+﻿Imports System.Drawing
+Partial Class ContactUs
+    Inherits System.Web.UI.Page
+
+    Private Sub ContactUs_Init(sender As Object, e As EventArgs) Handles Me.Init
+        Session("SupportEmail") = ConfigurationManager.AppSettings("supportemail").ToString
+        Label3.Text = ConfigurationManager.AppSettings("pagettl").ToString
+        Head1.Title = Label3.Text
+    End Sub
+    Protected Sub btnSendEmail_Click(sender As Object, e As EventArgs) Handles btnSendEmail.Click
+        Dim sEmailAddress As String = cleanText(txtEmail.Text)
+        If sEmailAddress = "" OrElse sEmailAddress.Trim <> txtEmail.Text.Trim Then
+            txtEmail.Text = "Enter proper email address!"
+            txtEmail.ForeColor = Color.Red
+            txtEmail.Focus()
+            Exit Sub
+        End If
+        Dim sName As String = cleanText(txtName.Text)
+        If sName = "" OrElse sName.Trim <> txtName.Text.Trim Then
+            txtName.Text = "Enter your name please..."
+            txtName.ForeColor = Color.Red
+            txtName.Focus()
+            Exit Sub
+        End If
+        Dim sSubject As String = cleanText(txtSubject.Text)
+        If sSubject.Trim <> txtSubject.Text.Trim Then
+            txtSubject.Text = "Enter email subject please..."
+            txtSubject.ForeColor = Color.Red
+            txtSubject.Focus()
+            Exit Sub
+        End If
+        Dim sBody As String = cleanText(txtBody.Text)
+        If sBody.Trim <> txtBody.Text.Trim Then
+            txtBody.Text = "Enter email message please..."
+            txtBody.ForeColor = Color.Red
+            txtBody.Focus()
+            Exit Sub
+        End If
+        If sSubject.Trim = "" AndAlso sBody.Trim = "" Then
+            txtSubject.Text = "Enter email subject and/or email message..."
+            txtSubject.ForeColor = Color.Red
+            txtSubject.Focus()
+            Exit Sub
+        End If
+
+        Label1.Text = " Confirmation: copy of your " & SendHTMLEmail("", sSubject, sBody, sEmailAddress, Session("SupportEmail"))
+        WriteToAccessLog("email", "Got email from " & sEmailAddress & " to " & Session("SupportEmail") & ", subject: " & sSubject & ", body: " & sBody & Label1.Text, 100)
+        txtName.Text = ""
+        txtEmail.Text = ""
+        txtSubject.Text = ""
+        txtBody.Text = ""
+    End Sub
+End Class
